@@ -7,12 +7,31 @@ class sample(object):
 
 class stump(object):
     def __init__(self, dimension, sample_L):
-        self.dimension = 0
-        self.threshold = 0
-        self.leftLable = 0
-        self.rightLable = 0
-        self.error = 0
-        self.weigth = 0
+        self.dimension = dimension
+        self.threshold = None
+        self.leftLabel = None
+        self.rightLabel = None
+        self.error = None
+        self.weigth = None
+        
+        ## get the best threshold ##
+        for sample_x in sample_L:
+            threshold_x = sample_x.feature[self.dimension]
+            leftLabel_x = None
+            rightLabel_x = None
+            error_x = self.getError(leftLabel_x, rightLabel_x)
+            if self.error is None or self.error > error_x:
+                self.threshold = threshold_x
+                self.leftLabel = leftLabel_x
+                self.rightLabel = rightLabel_x
+                self.error = error_x 
+        self.weigth = self.getWeight() 
+
+    def getWeight():
+        pass
+
+    def getError(self, leftLabel_x, rightLabel_x):
+        pass
 
     def reWeightSample():
         pass
@@ -43,9 +62,5 @@ def run():
         stump_x.reWeightSample()                
 
         
-
-if __name__ == "__main__":
-    run()
-
-
+if __name__ == "__main__": run() 
 
