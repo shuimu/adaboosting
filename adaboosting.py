@@ -1,3 +1,4 @@
+import math
 
 class sample(object):
     def __init__(self, feature, label, weight):
@@ -11,30 +12,56 @@ class stump(object):
         self.threshold = None
         self.leftLabel = None
         self.rightLabel = None
-        self.error = None
-        self.weigth = None
-        
+        self.error_rate = None
+        self.weight = None
+        self.total_error = sum([sample_x.weight for sample_x in sample_L])
+
         ## get the best threshold ##
         for sample_x in sample_L:
             threshold_x = sample_x.feature[self.dimension]
             leftLabel_x = None
             rightLabel_x = None
-            error_x = self.getError(leftLabel_x, rightLabel_x)
-            if self.error is None or self.error > error_x:
+            error_rate_x = self.getErrorRate(threshold_x, leftLabel_x, rightLabel_x)
+            if self.error_rate is None or self.error_rate > error_rate_x:
                 self.threshold = threshold_x
                 self.leftLabel = leftLabel_x
                 self.rightLabel = rightLabel_x
-                self.error = error_x 
-        self.weigth = self.getWeight() 
+                self.error_rate = error_rate_x 
+        self.weight = self.getWeight() 
 
-    def getWeight():
-        pass
+    def getWeight(): 
+        return 0.5*math.log((1-self.error_rate)/max(self.error_rate, 0.0001))
 
-    def getError(self, leftLabel_x, rightLabel_x):
-        pass
+    def getError(self, threshold_x, leftLabel_x, rightLabel_x):
+        left_1_error = 0.0
+        left_0_error = 0.0
+        right_1_error = 0.0
+        right_0_error = 0.0
+        ## get left errors ##
+        for sample_y in sample_L:
+            if sample_y.feature[self.dimension] <= threshold_x:
+                if sample_y.label == 0:
+                    left_1_error += sample_y.weight
+                else:
+                    left_0_error += sample_y.weight
+            else:
+                if sample_y.label == 0:
+                    right_1_error += sample_y.weight
+                else:
+                    right_0_error += sample_y.weight
+        ## get error and labels ##
+        if left_1_error < left_0_error:
+            leftLabel_x = 1
+        else:
+            leftLabel_x = 0
+        if right_1_error < right_0_error:
+            rightLabel_x = 1
+        else:
+            rightLabel_x = 0
+        return (min(left_1_error, left_0_error) + min(right_1_error, right_0_error))/self.total_error
 
     def reWeightSample():
-        pass
+        pass 
 
 nWeak = 4
 nSample = -1
@@ -62,5 +89,5 @@ def run():
         stump_x.reWeightSample()                
 
         
-if __name__ == "__main__": run() 
-
+if __name__ == "__main__": 
+    run() 
